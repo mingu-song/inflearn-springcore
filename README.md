@@ -38,6 +38,11 @@
 ### CGLIB(test/cglib)
 * code generator library
 * 실제 사용하는 경우는 거의 없으며, 스프링에서 사용하니 알고 있으면 좋음
-* 기본생성자가 필요하고, 의존관계를 setter로 처리하는 등의 제약사항이 있기에 `ProxyFactory` 사용
 ---
-
+## 6. 스프링이 지원하는 프록시
+* `ProxyFactory` - JDK 동적 프록시와 CGLIB 를 동시에 적용할 필요가 있을 경우
+* `Advice` - InvocationHandler와 MehtodIntercetor 에서 공통으로 처리할 로직
+* `Pointcut` - 특정 부가 기능을 어디에 추가할 것인지 필터링 로직
+* `Advisor` - Advice + Pointcut
+* `AspectJExpressionPointcut` 을 가장 많이 사용
+* target 에 여러 advisor 를 적용하더라도, proxy는 하나만 생성

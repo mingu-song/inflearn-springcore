@@ -2,6 +2,8 @@ package mingu.inflearn.springcore;
 
 import mingu.inflearn.springcore.config.v2_dynamicproxy.DynamicProxyBasicConfig;
 import mingu.inflearn.springcore.config.v2_dynamicproxy.DynamicProxyFilterConfig;
+import mingu.inflearn.springcore.config.v3_proxyfactory.ProxyFactoryConfigV1;
+import mingu.inflearn.springcore.config.v3_proxyfactory.ProxyFactoryConfigV2;
 import mingu.inflearn.springcore.trace.logtrace.LogTrace;
 import mingu.inflearn.springcore.trace.logtrace.ThreadLocalLogTrace;
 import org.springframework.boot.SpringApplication;
@@ -10,7 +12,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 //@Import(DynamicProxyBasicConfig.class)
-@Import(DynamicProxyFilterConfig.class)
+//@Import(DynamicProxyFilterConfig.class)
+//@Import(ProxyFactoryConfigV1.class)
+@Import(ProxyFactoryConfigV2.class)
 @SpringBootApplication(scanBasePackages = "mingu.inflearn.springcore.proxyapp") // 특정패키지만 빈으로 등록
 public class SpringCoreApplication {
 
