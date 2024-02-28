@@ -46,3 +46,14 @@
 * `Advisor` - Advice + Pointcut
 * `AspectJExpressionPointcut` 을 가장 많이 사용
 * target 에 여러 advisor 를 적용하더라도, proxy는 하나만 생성
+---
+## 7. 빈 후처리기
+* `aspectJ` - AOP 관련 클래스를 자동으로 스프링 빈 등록
+* `AutoProxyCreator` - 자동설정으로 `AnnotationAwareAspectAutoProxyCreator` 후처리 빈 등록, Advisor 찾아서 pointcut 과 advice 적용(@AspectJ 포함)
+* **포인트컷 사용 용도**
+  * 프록시 적용 여부 (생성) : 후처리기에서 advisor의 포인트컷을 이용하여 빈 메소를 모두 체크하여 결정
+  * 어드바이스 적용 여부 (사용) : 프록시가 호출되면 포인트컷을 이용하여 어드바이스 적용 체크 후 target 호출
+
+
+
+
