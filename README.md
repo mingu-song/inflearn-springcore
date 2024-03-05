@@ -1,10 +1,10 @@
 # 스프링 핵심 원리 - 고급편
 > [인프런 강의 바로가기](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-%ED%95%B5%EC%8B%AC-%EC%9B%90%EB%A6%AC-%EA%B3%A0%EA%B8%89%ED%8E%B8)
 >
-> Spring boot 2.6.4 / Java 11
+> Spring boot 3.2.3 / Java 17
 
 ## 0. 소개
-* 
+
 ---
 ## 1. 예제 만들기
 ### app/v0
@@ -15,6 +15,7 @@
 ### app/v2, trace/hellotrace/HelloTraceV2
 * `traceId` 연동을 위해 각 함수 파라미터로 전달
 * 가장 지저분한 소스가 되어버린 상태
+
 ---
 ## 2. 쓰레드 로컬 - ThreadLocal
 ### app/v3, trace/logtrace/**
@@ -22,6 +23,7 @@
 * LogTraceConfig 사용하여 FieldLogTrace or ThreadLocalLogTrace 사용
 ### 주의사항(!!)
 * threadpool을 사용하는 경우 remove() 를 하지 않으면 threadlocal이 남아 있어 문제가 발생할 수 있음
+
 ---
 ## 3. 템플릿 메서드 패턴과 콜백 패턴
 ## 4. 프록시 패턴과 데코레이터 패턴
@@ -29,6 +31,7 @@
 * 데코레이터 패턴 : 새로운 기능 추가가 목적
 * 인터페이스 기반 프록시가 편하지만 항상 편한것은 아님
 * 로직은 동일하지만 적용 대상 클래스만 달라짐 -> 동적 프록시 적용 필요
+
 ---
 ## 5. 동적 프록시 기술
 ### JDK 동적 프록시 (v2_dynamicproxy)
@@ -38,6 +41,7 @@
 ### CGLIB(test/cglib)
 * code generator library
 * 실제 사용하는 경우는 거의 없으며, 스프링에서 사용하니 알고 있으면 좋음
+
 ---
 ## 6. 스프링이 지원하는 프록시
 * `ProxyFactory` - JDK 동적 프록시와 CGLIB 를 동시에 적용할 필요가 있을 경우
@@ -46,6 +50,7 @@
 * `Advisor` - Advice + Pointcut
 * `AspectJExpressionPointcut` 을 가장 많이 사용
 * target 에 여러 advisor 를 적용하더라도, proxy는 하나만 생성
+
 ---
 ## 7. 빈 후처리기
 * `aspectJ` - AOP 관련 클래스를 자동으로 스프링 빈 등록
@@ -53,9 +58,11 @@
 * **포인트컷 사용 용도**
   * 프록시 적용 여부 (생성) : 후처리기에서 advisor의 포인트컷을 이용하여 빈 메소를 모두 체크하여 결정
   * 어드바이스 적용 여부 (사용) : 프록시가 호출되면 포인트컷을 이용하여 어드바이스 적용 체크 후 target 호출
+
 ---
 ## 8. @Aspect AOP
 * 어노테이션을 이용한 어드바이저(pointcut + advice) 생성
+
 ---
 ## 9. 스프링 AOP 개념
 * `애스펙트` - 애플리케이션을 바라보는 관점을 하나하나의 기능에서 횡단 관심사(cross-cutting concerns) 관점으로 달리 보는 것이
@@ -70,6 +77,7 @@
   * `어드바이저(Advisor)` - 하나의 어드바이스와 하나의 포인트 컷(스프링 AOP에서만 사용되는 용어)
   * `위빙(Weaving)` - 포인트컷으로 결정한 타켓의 조인 포인트에 어드바이스를 적용하는 것
   * `AOP 프록시` - AOP 기능을 구현하기 위해 만든 프록시 객체(jdk동적프록시 or CGLIB프록시)
+
 ---
 ## 10. 스프링 AOP 구현 (test/../aop/AopTest.java)
 * `@Around` - 메서드 호출 전후에 수행, 가장 강력한 어드바이스, 조인 포인트 실행 여부 선택, 반환 값 변환, 예외 변환 등이 가능 
@@ -79,6 +87,7 @@
 * `@After` - 조인 포인트가 정상 또는 예외에 관계없이 실행(finally)
 * 추상화 되고 제약이 있을수록 좋은 설계가 됨
   * 타겟호출을 할 이유가 없다면 Before 를 사용하여 제약을 둠
+
 ---
 ## 11. 스프링 AOP - 포인트컷 (test/../aop/pointcut/*.java)
 * `execution` - 메소드 실행 조인 포인트를 매칭. 스프링 AOP에서 가장 많이 사용하고, 기능도 복잡
@@ -105,5 +114,33 @@
   * JDK 동적 프록시는 인터페이스를 대상으로 생성
     * 인터페이스 지정 - 모두 AOP 대상
     * 구체 클래스 지정 - this 는 인터페이스이므로 AOP 대상 안됨
+
 ---
 ## 12. 스프링 AOP - 실전 예제 (src/../aop/exam) (test/../aop/exam)
+
+---
+## 13. 스프링 AOP - 실무 주의사항 
+### 프록시와 내부 호출 문제 (src/../aop/internalcall) (test/../aop/internalcall)
+* 대상 객체의 내부에서 메서드 호출이 발생하면 프록시를 거치지 않고 대상 객체를 직접 호출하는 문제가 발생
+#### 대안1 - 자기 자신 주입
+* setter injection 을 사용
+* `spring.main.allow-circular-references=true` 설정 필요
+#### 대안2 - 지연 조회
+* ApplicationContext.getBean() 또는 ObjectProvider<T>.getObject() 사용
+#### 대안3 - 구조 변경 (그나마 자연스러움)
+* CallService 와 InternalService 클래스 분리
+### JDK 프록시 기술과 한계 (test/../aop/proxyvs)
+#### 타입 캐스팅 
+* 인터페이스를 이용하여 프록시를 생성하기에 구체 클래스로 캐스팅 불가하기에 다음 문제 발생
+#### 의존관계 주입
+* JDK 동적 프록시(인터페이스) 사용시 구체 클래스 DI 때 에러 발생 (BeanNotOfRequiredTypeException)
+* CGLIB 프록시는 구체 클래스를 사용하기에 가능 (스프링 기본값)
+### CGLIB 프록시 기술과 한계
+* 대상 클래스에 기본 생성자 필수 - proxy 생성자 -> 구체 클래스 생성자
+* 생성자 2번 호출 - 타겟의 인스턴스 생성 + 프록시 객체 생성시 super()
+* final 클래스, 메소드 불가 - final 은 상속 및 오버라이딩 불가 (실제는 문제되지 않음. 잘 사용안함)
+### 스프링의 해결책
+* 스프링 3.2 에 CGLIB 포함 (spring-core)
+* 스프링 4.0 에 특별한 라이브러리(`objenesis`)를 사용하여 CGLIB 기본 생성자 필수 해결
+* 스프링 4.0 에 생성자 2번 호출 해결 (위와 동일)
+* **스프링부트 2.0 부터 CGLIB 기본 사용**
